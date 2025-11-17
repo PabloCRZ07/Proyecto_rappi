@@ -3,6 +3,12 @@
 using namespace std;
 
 int main() {
-    cout << "Hola mundo";  // Mensaje en pantalla
-    return 0;              // Fin del programa
+    int telefono;
+    char nombre;
+
+
+    cout << "==============================\n";
+    cout << "| BIENVENIDO A RAPPI PROYECT | \n";
+    cout << "==============================\n";
+    return 0;
 }
