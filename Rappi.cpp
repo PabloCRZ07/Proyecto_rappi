@@ -3,30 +3,41 @@
 // Samuel Felipe García Sanchez
 // Edwin Mateo Camacho Tierradentro
 
-#include <iostream>  // Entrada y salida
+#include <iostream>
+#include <limits>
 
 using namespace std;
 
 int main() {
-    // variables van aquí
     string nombre, direccion, telefono;
+    string repetir = "s";
 
-    // Interfaz 
-        cout << "============================================\n";
-        cout << "|        BIENVENIDO A RAPPI PROYECT        | \n";
-        cout << "============================================\n";
-        cout << "| A CONTINUACION INGRESE DATOS DEL CLIENTE |\n";
-        cout << "--------------------------------------------\n";
+    cout << "============================================\n";
+    cout << "|        BIENVENIDO A RAPPI PROYECT        | \n";
+    cout << "============================================\n";
+    cout << "| A CONTINUACION INGRESE DATOS DEL CLIENTE |\n";
+    cout << "--------------------------------------------\n";
 
-        cout << "|- Telefono  :\n";
+    while (repetir == "s" || repetir == "S") {
+
+        cout << "|- Telefono  : ";
         getline(cin, telefono);
 
-        cout << "|- Nombre    :\n";
-        getline(cin, nombre); 
+        cout << "|- Nombre    : ";
+        getline(cin, nombre);
 
-        cout << "|- Direccion :\n";
-        getline(cin, direccion); 
+        cout << "|- Direccion : ";
+        getline(cin, direccion);
 
-        cout << telefono << " " << nombre << " " << direccion << "\n";
+        cout << "\nDesea ingresar otro domicilio? (s/n): ";
+        cin >> repetir;
+
+        // limpiar ENTER pendiente antes de usar getline otra vez
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    cout << "\nUltimo domicilio ingresado:\n";
+    cout << telefono << " " << nombre << " " << direccion << "\n";
+
     return 0;
 }
