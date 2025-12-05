@@ -9,11 +9,16 @@
 using namespace std;
 
 int main() {
+    
+    // DEFINIENDO VARIABLES
     string nombre[100], direccion[100], telefono[100], producto[100];
     float precio[100];
     string repetir = "s", repetirDomicilio = "s";
     int n = 0, cantidad[100];
-
+    
+    // DEFINIENDO FUNCIONES
+    int suma();
+    
     cout << "============================================\n";
     cout << "|        BIENVENIDO A RAPPI PROYECT        | \n";
     cout << "============================================\n";
