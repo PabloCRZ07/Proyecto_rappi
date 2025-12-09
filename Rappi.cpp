@@ -7,6 +7,7 @@
 #include <limits>
 #include <ctime>
 #include <windows.h>
+#include <cstdio>
 
 using namespace std;
 
@@ -21,6 +22,10 @@ struct datosPedido {
     int cantidad[100][20];
     int numProductos[100];
 
+    float subtotal[100];
+    float domicilio[100];
+    float total[100];
+
     string horaReg[100], fechaReg[100];
     int estado[100]; // 0=Pendiente, 1=Preparando, 2=En camino, 3=Entregado
 };
@@ -31,6 +36,8 @@ datosPedido pedido;
 int totalRegistros = 0;
 
 // ======= FUNCIONES =======
+void portada();
+void mostrarMenu();
 void registrarPedidos();
 void mostrarPedidos();
 void cambiarEstado();
@@ -38,27 +45,22 @@ void filtrarPorEstado();
 void filtrarNombreNumero();  
 void historialEstadisticas();
 
-// Funcion de colores ASCII
+// Funcion de colores ASCII (no-op, sin colores)
 void setColor(int color) {
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+    // Interfaz sin colores (no-op para mantener fidelidad)
 }
-
 
 // ============================ MENU PRINCIPAL =================================
 int main() {
+
+    portada(); // Mostrar portada antes de entrar al menú
 
     int opcion;
 
     do {
         system("cls");
+        mostrarMenu();
 
-        cout << "1. Registrar pedidos\n";
-        cout << "2. Mostrar pedidos\n";
-        cout << "3. Cambiar estado del pedido\n";
-        cout << "4. Filtrar por estado\n";
-        cout << "5. Filtrar por nombre o telefono\n";
-        cout << "6. Historial y Estadisticas\n"; // nueva opción
-        cout << "7. Salir\n"; // salida como última
         cout << "Seleccione una opcion: ";
         cin >> opcion;
 
@@ -68,10 +70,9 @@ int main() {
         case 3: cambiarEstado(); break;
         case 4: filtrarPorEstado(); break;
         case 5: filtrarNombreNumero(); break;
-        case 6: historialEstadisticas(); break; // nueva opción
+        case 6: historialEstadisticas(); break;
         case 7: cout << "Saliendo del sistema...\n"; break;
         default: cout << "Opcion no valida.\n";
-
         }
 
     } while (opcion != 7);
@@ -79,23 +80,117 @@ int main() {
     return 0;
 }
 
+// =========================== PANTALLA DE PORTADA =============================
+// Se usa un array de líneas en lugar de un raw string literal para compatibilidad
+void portada() {
+
+    const char* artLines[] = {
+"...........                                                          ",
+"                                                ........++++++++++=........                                                  ",
+"                                           .....-++*********************++++.....                                             ",
+"                                        ...=++*********************************+++....                                        ",
+"                                     ...++******************************************+*...                                      ",
+"                                  ...*+***********************************************+=...                                   ",
+"                                ..++******************************************************+...                                ",
+"                              ...**********************************************************+...                               ",
+"                            ..-***************************************************************...                             ",
+"                          ...*******************************************************************..                           ",
+"                         ..**********************************************************************+..                         ",
+"                       ..-+************************************************************************..                        ",
+"                      ..+***************************************************************************-.                       ",
+"                     ..********************#%%#*********************************************************..                    ",
+"                    ..********************#@-=@#*****%@@@%*********************************************.                    ",
+"                   ..+*****#@@@@@@@@@%**%@@....@@%#**@...%*********************************************=.                   ",
+"                   .*****#@@-........@@%+..-==-:.=@@@@.=:@@@%******************************************+=.                 ",
+"                  .*****%@..:=-........@*..-+=-...*...:+-...:#******************************************..                ",
+"                  .****@#.-+=:.@@@@@-..-@@@:=-:@@@@@@@:=-=:=@#***********************************************.                ",
+"                 .++**%#.=++:-@%***#@@..%*%:..*%****#@...@@%#************************************************..               ",
+"                 .****@.-++-.@#******#@@#*#@@@%******%%@@@@@@@@%****%@@@@@@@@#*****************************.               ",
+"                 ++**##.+++.@#**********************#@@@.......@@@@@@........@%****************************.               ",
+"                .++**##.+++.@*********************#@@=.:-+++++-..+...-+++++=-.@#***************************+.              ",
+"                .*****@.-++.@%#*****************#@@..:=++++++++++===++++++++++-.@#***************************+              ",
+"                .+****%#.-+-.*@%#************#%@@..-=++++++++++++++++++++++++++-.@@%***********************++.             ",
+"                .******%%.-+=:.*@@@@@@@@@@@@@@+..-+++++++++++++++++++++++++++++-..%@@@@@%#*********#%@@%**++              ",
+"                .=******%@.:=+=:..............:=++++++++++++++++++++++++++++++++=-.....:*@@@@@@@@@@@+..=**+.              ",
+"                 .*******#@-.-=++++=========++++++++++++++++++++++++++++++++++++++++==-:..............@***.              ",
+"                 .+*******#@@..:=++++++++++++++++++++++++++++=:....:=++++++++++++++++++++++++++++++=-..@@#**+.             ",
+"                 ..*********#@@=...-++++++++++++++++++++++=:...=@@@@:..:-++++++++++++++++++++=:....@@#***+.              ",
+"                  .+**********#%@@@......-=+++++++=-......=@@@@#**#@@@%......:=======:........=@@@@#****+=.               ",
+"                  ..**************%@@@@@@:..........@@@@@@%#**********%@@@@@@-.......=@@@@@@@@@#*********.                 ",
+"                   ..*******************#@@@@@@@@@@@%*********************#@@@@@@@@@#***************+..                   ",
+"                    .+*********************************************************************************..                    ",
+"                     .+*******************************************************************************..                     ",
+"                      ..******************************************************************************..                      ",
+"                       ..**************************************************************************+..                       ",
+"                        ..+***********************************************************************..                          ",
+"                          ..+*******************************************************************+..                           ",
+"                           .:%****************************************************************+...                             ",
+"                             ..=+************************************************************+..                              ",
+"                               ..=+********************************************************...                                ",
+"                                 ...++************************************************+...                                  ",
+"                                   ...++*********************************************+...                                     ",
+"                                      ....++************************************++=....                                       ",
+"                                          ....#+****************************++.....                                           ",
+"                                              ......++****************++.......                                                 ",
+"                                                    ....................                                                         ",
+NULL
+    };
+
+    system("cls");
+
+    // Imprimir cada línea del arte
+    for (int i = 0; artLines[i] != NULL; ++i) {
+        cout << artLines[i] << "\n";
+    }
+
+    cout << "\n------------------------------------------------- BIENVENIDO A RAPI PROYEC++ --------------------------------------------------\n\n";
+    cout << "                     Presione ENTER para continuar al menu\n";
+
+    // Limpiar buffer y esperar ENTER
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get();
+}
+
+// =========================== DISEÑO DEL MENU (ESTILO B) =====================
+void mostrarMenu() {
+    cout << "------------------------------ RAPI PROYEC++ ------------------------------\n";
+    cout << "                           MENU PRINCIPAL\n";
+    cout << "---------------------------------------------------------------------------\n\n";
+
+    cout << "   [1] Registrar Pedido           \t[2] Mostrar Pedidos\n\n";
+    cout << "   [3] Cambiar Estado             \t[4] Filtrar por Estado\n\n";
+    cout << "   [5] Buscar Nombre/Tel          \t[6] Historial y Estadisticas\n\n";
+    cout << "                          [7] SALIR\n\n";
+
+    cout << "---------------------------------------------------------------------------\n\n";
+}
+
 // =========================== REGISTRAR PEDIDOS ===============================
 void registrarPedidos() {
 
-     // Variables de repeticion
-    string repetir = "s", repetirDomicilio = "s";
+     string repetir = "s", repetirDomicilio = "s";
 
-    // sistema de repeticion de PRODUCTO 
     while (repetir == "s" || repetir == "S") {
 
         repetirDomicilio = "s";
         pedido.numProductos[totalRegistros] = 0;
 
-        // Para que no se salte la función 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-        cout << "|- Telefono  : ";
-        getline(cin, cliente.telefono[totalRegistros]);
+        // ===== VALIDAR TELEFONO =====
+        bool telOk = false;
+        do {
+            cout << "|- Telefono  (10 digitos): ";
+            getline(cin, cliente.telefono[totalRegistros]);
+
+            if (cliente.telefono[totalRegistros].size() == 10 &&
+                cliente.telefono[totalRegistros].find_first_not_of("0123456789") == string::npos)
+            {
+                telOk = true;
+            } else {
+                cout << "? ERROR: El telefono debe tener exactamente 10 digitos.\n";
+            }
+        } while (!telOk);
 
         cout << "|- Nombre    : ";
         getline(cin, cliente.nombre[totalRegistros]);
@@ -103,8 +198,7 @@ void registrarPedidos() {
         cout << "|- Direccion : ";
         getline(cin, cliente.direccion[totalRegistros]);
 
-
-// =================== SACAR HORA DEL PC =====================
+        // =================== FECHA Y HORA =====================
         time_t now = time(0);
         tm* localTime = localtime(&now);
 
@@ -120,11 +214,12 @@ void registrarPedidos() {
             localTime->tm_hour,
             localTime->tm_min);
         pedido.horaReg[totalRegistros] = bufferHora;
-// ===========================================================
 
         pedido.estado[totalRegistros] = 0;
 
-// Sistema de repeticion de domicilio
+        float subtotalTemp = 0;
+
+        // ========== REGISTRO DE PRODUCTOS ==========
         while (repetirDomicilio == "s" || repetirDomicilio == "S") {
 
             int pos = pedido.numProductos[totalRegistros];
@@ -132,11 +227,31 @@ void registrarPedidos() {
             cout << "|- Ingrese nombre del producto : ";
             getline(cin, pedido.producto[totalRegistros][pos]);
 
-            cout << "|- Ingrese cantidad : ";
-            cin >> pedido.cantidad[totalRegistros][pos];
+            // ===== VALIDAR CANTIDAD =====
+            do {
+                cout << "|- Ingrese cantidad: ";
+                cin >> pedido.cantidad[totalRegistros][pos];
 
-            cout << "|- Ingrese precio : ";
-            cin >> pedido.precio[totalRegistros][pos];
+                if (cin.fail() || pedido.cantidad[totalRegistros][pos] <= 0) {
+                    cout << "? ERROR: La cantidad debe ser un entero positivo.\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+            } while (pedido.cantidad[totalRegistros][pos] <= 0);
+
+            // ===== VALIDAR PRECIO =====
+            do {
+                cout << "|- Ingrese precio: ";
+                cin >> pedido.precio[totalRegistros][pos];
+
+                if (cin.fail() || pedido.precio[totalRegistros][pos] <= 0) {
+                    cout << "? ERROR: El precio debe ser un valor positivo.\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+            } while (pedido.precio[totalRegistros][pos] <= 0);
+
+            subtotalTemp += pedido.cantidad[totalRegistros][pos] * pedido.precio[totalRegistros][pos];
 
             pedido.numProductos[totalRegistros]++;
 
@@ -145,7 +260,16 @@ void registrarPedidos() {
             getline(cin, repetirDomicilio);
         }
 
-        // Para que se guarden individualmente
+        // ==== CALCULOS ====
+        pedido.subtotal[totalRegistros] = subtotalTemp;
+
+        if (subtotalTemp > 50000)
+            pedido.domicilio[totalRegistros] = subtotalTemp * 0.05f;
+        else
+            pedido.domicilio[totalRegistros] = subtotalTemp * 0.15f;
+
+        pedido.total[totalRegistros] = pedido.subtotal[totalRegistros] + pedido.domicilio[totalRegistros];
+
         totalRegistros++;
 
         cout << "\nDesea ingresar otro domicilio? (s/n): ";
@@ -176,8 +300,11 @@ void mostrarPedidos() {
         cout << "Fecha    : " << pedido.fechaReg[i] << "\n";
         cout << "Hora     : " << pedido.horaReg[i] << "\n";
 
-        cout << "Estado   : ";
-        setColor(14); cout << "Pendiente\n"; setColor(7);
+        cout << "Subtotal : " << pedido.subtotal[i] << "\n";
+        cout << "Domicilio: " << pedido.domicilio[i] << "\n";
+        cout << "Total    : " << pedido.total[i] << "\n";
+
+        cout << "Estado   : Pendiente\n";
 
         cout << "\n--- PRODUCTOS ---\n";
 
@@ -196,11 +323,10 @@ void mostrarPedidos() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
 }
-// =============================================================================
 
 // ============================== CAMBIAR ESTADO ===============================
 void cambiarEstado() {
-     // VALIDACION SI NO HAY PEDIDOS
+    
     if (totalRegistros == 0) {
         cout << "\nNo hay pedidos registrados.\n";
         system("pause");
@@ -211,7 +337,6 @@ void cambiarEstado() {
     cout << "\nIngrese el ID del pedido que desea modificar (1 - " << totalRegistros << "): ";
     cin >> id;
 
-    // VALIDACION POR SI NO EXISTE EL ID
     if (id < 1 || id > totalRegistros) {
         cout << "ID invalido.\n";
         return;
@@ -228,7 +353,6 @@ void cambiarEstado() {
     cout << "Opcion: ";
     cin >> nuevoEstado;
 
-    // VALIDACION que el nuevo valor sea valido
     while (nuevoEstado < 0 || nuevoEstado > 3) {
         cout << "Valor invalido. Debe ser 0, 1, 2 o 3.\n";
         cout << "Ingrese nuevamente: ";
@@ -243,7 +367,6 @@ void cambiarEstado() {
 // ======================= FILTRAR POR ESTADO ==================================
 void filtrarPorEstado() {
 
-     // VALIDA QUE HAYAN PEDIDOS
     if (totalRegistros == 0) {
         cout << "\nNo hay pedidos registrados.\n";
         cout << "\nPresione ENTER para continuar...";
@@ -261,7 +384,6 @@ void filtrarPorEstado() {
     cout << "Seleccione: ";
     cin >> estadoBuscado;
 
-    // VALIDA que estadoBuscado este entre el rango
     while (estadoBuscado < 0 || estadoBuscado > 3) {
         cout << "Valor invalido. Debe ser 0, 1, 2 o 3.\n";
         cout << "Seleccione nuevamente: ";
@@ -286,6 +408,10 @@ void filtrarPorEstado() {
             cout << "Fecha    : " << pedido.fechaReg[i] << "\n";
             cout << "Hora     : " << pedido.horaReg[i] << "\n";
 
+            cout << "Subtotal : " << pedido.subtotal[i] << "\n";
+            cout << "Domicilio: " << pedido.domicilio[i] << "\n";
+            cout << "Total    : " << pedido.total[i] << "\n";
+
             cout << "\n--- PRODUCTOS ---\n";
 
             for (int p = 0; p < pedido.numProductos[i]; p++) {
@@ -297,22 +423,17 @@ void filtrarPorEstado() {
         }
     }
 
-//  VALIDACION 
     if (!encontrado)
         cout << "\nNo existen pedidos con ese estado.\n";
 
-//  Para que no se salte directamente a menu
     cout << "\nPresione ENTER para continuar...";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
 }
 
 // ======================= FILTRAR POR NOMBRE O TELEFONO =======================
-
-
 void filtrarNombreNumero() {
 
-//  VALIDA que hayan pedidos
     if (totalRegistros == 0) {
         cout << "\nNo hay pedidos registrados.\n";
         cout << "\nPresione ENTER para continuar...";
@@ -321,7 +442,6 @@ void filtrarNombreNumero() {
         return;
     }
     
-    // prompt
     int tipo;
     cout << "\n¿Desea buscar por?:\n";
     cout << "1. Telefono\n";
@@ -329,7 +449,6 @@ void filtrarNombreNumero() {
     cout << "Seleccione: ";
     cin >> tipo;
 
-    // VALIDACION
     while (cin.fail() || (tipo != 1 && tipo != 2)) {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -348,7 +467,7 @@ void filtrarNombreNumero() {
         for (int i = 0; i < totalRegistros; i++) {
             if (cliente.telefono[i] == telBuscar) {
                 encontrado = true;
-                cout << "\n===== RESULTADO =====\n";     // DESPLIEGUE DE DATOS
+                cout << "\n===== RESULTADO =====\n";     
                 cout << "Pedido #" << i + 1 << "\n";
                 cout << "Nombre   : " << cliente.nombre[i] << "\n";
                 cout << "Telefono : " << cliente.telefono[i] << "\n";
@@ -356,7 +475,6 @@ void filtrarNombreNumero() {
             }
         }
 
-        // Mensaje de salida
         if (!encontrado)
             cout << "\nNo hay pedidos con ese telefono.\n";
     }
@@ -378,7 +496,7 @@ void filtrarNombreNumero() {
                 cout << "Direccion: " << cliente.direccion[i] << "\n";
             }
         }
-        // Mensaje de salida
+
         if (!encontrado)
             cout << "\nNo hay pedidos a nombre de esa persona.\n";
     }
@@ -387,8 +505,8 @@ void filtrarNombreNumero() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
 }
-// ====================== HISTORIAL Y ESTADISTICAS =============================
 
+// ====================== HISTORIAL Y ESTADISTICAS =============================
 void historialEstadisticas() {
     if (totalRegistros == 0) {
         cout << "\nNo hay pedidos registrados.\n";
@@ -413,13 +531,16 @@ void historialEstadisticas() {
         cout << "Fecha    : " << pedido.fechaReg[i] << "\n";
         cout << "Hora     : " << pedido.horaReg[i] << "\n";
 
+        cout << "Subtotal : " << pedido.subtotal[i] << "\n";
+        cout << "Domicilio: " << pedido.domicilio[i] << "\n";
+        cout << "Total    : " << pedido.total[i] << "\n";
+
         cout << "Estado   : ";
         switch(pedido.estado[i]) {
-            case 0: setColor(14); cout << "Pendiente"; totalPendientes++; break;
-            case 1: setColor(6); cout << "Preparando"; totalPreparando++; break;
-            case 2: setColor(9); cout << "En camino"; totalEnCamino++; break;
-            case 3: setColor(10); cout << "Entregado"; totalEntregado++;
-                    // calcular tiempo aproximado desde registro hasta ahora
+            case 0: cout << "Pendiente"; totalPendientes++; break;
+            case 1: cout << "Preparando"; totalPreparando++; break;
+            case 2: cout << "En camino"; totalEnCamino++; break;
+            case 3: cout << "Entregado"; totalEntregado++;
                     {
                         tm t = {};
                         int h, m;
@@ -431,7 +552,7 @@ void historialEstadisticas() {
                     }
                     break;
         }
-        setColor(7);
+
         cout << "\n--- PRODUCTOS ---\n";
         for (int p = 0; p < pedido.numProductos[i]; p++) {
             cout << "Producto : " << pedido.producto[i][p] << "\n";
@@ -444,11 +565,12 @@ void historialEstadisticas() {
     cout << "\n================ ESTADISTICAS =================\n";
     cout << "Total Pendientes  : " << totalPendientes << "\n";
     cout << "Total Preparando  : " << totalPreparando << "\n";    
-    cout << "Total En camino  : " << totalEnCamino << "\n";
+    cout << "Total En camino   : " << totalEnCamino << "\n";
     cout << "Total Entregados  : " << totalEntregado << "\n";
 
     if (entregadosCont > 0)
-        cout << "Tiempo promedio de entrega (minutos): " << tiempoTotalMinutos / entregadosCont << "\n";
+        cout << "Tiempo promedio de entrega (minutos): " 
+             << tiempoTotalMinutos / entregadosCont << "\n";
     else
         cout << "Tiempo promedio de entrega (minutos): N/A\n";
 
@@ -456,3 +578,4 @@ void historialEstadisticas() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
 }
+
