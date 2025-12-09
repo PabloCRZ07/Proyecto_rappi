@@ -38,13 +38,13 @@ void filtrarPorEstado();
 void filtrarNombreNumero();  
 void historialEstadisticas();
 
+// Funcion de colores ASCII
 void setColor(int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
-// =========================
 
-// ========== MENU PRINCIPAL ============
+// ============================ MENU PRINCIPAL =================================
 int main() {
 
     int opcion;
@@ -79,16 +79,19 @@ int main() {
     return 0;
 }
 
-// ===== REGISTRAR PEDIDOS =====
+// =========================== REGISTRAR PEDIDOS ===============================
 void registrarPedidos() {
 
+     // Variables de repeticion
     string repetir = "s", repetirDomicilio = "s";
 
+    // sistema de repeticion de PRODUCTO 
     while (repetir == "s" || repetir == "S") {
 
         repetirDomicilio = "s";
         pedido.numProductos[totalRegistros] = 0;
 
+        // Para que no se salte la función 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         cout << "|- Telefono  : ";
@@ -100,6 +103,8 @@ void registrarPedidos() {
         cout << "|- Direccion : ";
         getline(cin, cliente.direccion[totalRegistros]);
 
+
+// =================== SACAR HORA DEL PC =====================
         time_t now = time(0);
         tm* localTime = localtime(&now);
 
@@ -115,9 +120,11 @@ void registrarPedidos() {
             localTime->tm_hour,
             localTime->tm_min);
         pedido.horaReg[totalRegistros] = bufferHora;
+// ===========================================================
 
         pedido.estado[totalRegistros] = 0;
 
+// Sistema de repeticion de domicilio
         while (repetirDomicilio == "s" || repetirDomicilio == "S") {
 
             int pos = pedido.numProductos[totalRegistros];
@@ -138,6 +145,7 @@ void registrarPedidos() {
             getline(cin, repetirDomicilio);
         }
 
+        // Para que se guarden individualmente
         totalRegistros++;
 
         cout << "\nDesea ingresar otro domicilio? (s/n): ";
@@ -145,7 +153,7 @@ void registrarPedidos() {
     }
 }
 
-// ===== MOSTRAR SOLO PENDIENTES =====
+// ========================= MOSTRAR PEDIDOS ===================================
 void mostrarPedidos() {
 
     cout << "\n============================================\n";
@@ -188,12 +196,14 @@ void mostrarPedidos() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
 }
+// =============================================================================
 
-// ===== CAMBIAR ESTADO =====
+// ============================== CAMBIAR ESTADO ===============================
 void cambiarEstado() {
-
+     // VALIDACION SI NO HAY PEDIDOS
     if (totalRegistros == 0) {
         cout << "\nNo hay pedidos registrados.\n";
+        system("pause");
         return;
     }
 
@@ -201,6 +211,7 @@ void cambiarEstado() {
     cout << "\nIngrese el ID del pedido que desea modificar (1 - " << totalRegistros << "): ";
     cin >> id;
 
+    // VALIDACION POR SI NO EXISTE EL ID
     if (id < 1 || id > totalRegistros) {
         cout << "ID invalido.\n";
         return;
@@ -217,6 +228,7 @@ void cambiarEstado() {
     cout << "Opcion: ";
     cin >> nuevoEstado;
 
+    // VALIDACION que el nuevo valor sea valido
     while (nuevoEstado < 0 || nuevoEstado > 3) {
         cout << "Valor invalido. Debe ser 0, 1, 2 o 3.\n";
         cout << "Ingrese nuevamente: ";
@@ -228,9 +240,10 @@ void cambiarEstado() {
     cout << "\nEstado actualizado correctamente.\n";
 }
 
-// ===== FILTRAR POR ESTADO =====
+// ======================= FILTRAR POR ESTADO ==================================
 void filtrarPorEstado() {
 
+     // VALIDA QUE HAYAN PEDIDOS
     if (totalRegistros == 0) {
         cout << "\nNo hay pedidos registrados.\n";
         cout << "\nPresione ENTER para continuar...";
@@ -248,6 +261,7 @@ void filtrarPorEstado() {
     cout << "Seleccione: ";
     cin >> estadoBuscado;
 
+    // VALIDA que estadoBuscado este entre el rango
     while (estadoBuscado < 0 || estadoBuscado > 3) {
         cout << "Valor invalido. Debe ser 0, 1, 2 o 3.\n";
         cout << "Seleccione nuevamente: ";
@@ -283,20 +297,22 @@ void filtrarPorEstado() {
         }
     }
 
+//  VALIDACION 
     if (!encontrado)
         cout << "\nNo existen pedidos con ese estado.\n";
 
+//  Para que no se salte directamente a menu
     cout << "\nPresione ENTER para continuar...";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
 }
 
-// ======================================================
-// ==========  FILTRAR POR NOMBRE O TELEFONO ============
-// ======================================================
+// ======================= FILTRAR POR NOMBRE O TELEFONO =======================
+
 
 void filtrarNombreNumero() {
 
+//  VALIDA que hayan pedidos
     if (totalRegistros == 0) {
         cout << "\nNo hay pedidos registrados.\n";
         cout << "\nPresione ENTER para continuar...";
@@ -304,7 +320,8 @@ void filtrarNombreNumero() {
         cin.get();
         return;
     }
-
+    
+    // prompt
     int tipo;
     cout << "\n¿Desea buscar por?:\n";
     cout << "1. Telefono\n";
@@ -312,6 +329,7 @@ void filtrarNombreNumero() {
     cout << "Seleccione: ";
     cin >> tipo;
 
+    // VALIDACION
     while (cin.fail() || (tipo != 1 && tipo != 2)) {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -326,11 +344,11 @@ void filtrarNombreNumero() {
         cout << "Ingrese el numero de telefono: ";
         getline(cin, telBuscar);
 
-        bool encontrado = false;
+        bool encontrado = false;                         
         for (int i = 0; i < totalRegistros; i++) {
             if (cliente.telefono[i] == telBuscar) {
                 encontrado = true;
-                cout << "\n===== RESULTADO =====\n";
+                cout << "\n===== RESULTADO =====\n";     // DESPLIEGUE DE DATOS
                 cout << "Pedido #" << i + 1 << "\n";
                 cout << "Nombre   : " << cliente.nombre[i] << "\n";
                 cout << "Telefono : " << cliente.telefono[i] << "\n";
@@ -338,6 +356,7 @@ void filtrarNombreNumero() {
             }
         }
 
+        // Mensaje de salida
         if (!encontrado)
             cout << "\nNo hay pedidos con ese telefono.\n";
     }
@@ -359,7 +378,7 @@ void filtrarNombreNumero() {
                 cout << "Direccion: " << cliente.direccion[i] << "\n";
             }
         }
-
+        // Mensaje de salida
         if (!encontrado)
             cout << "\nNo hay pedidos a nombre de esa persona.\n";
     }
@@ -368,9 +387,7 @@ void filtrarNombreNumero() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
 }
-// ======================================================
-// ========== HISTORIAL Y ESTADISTICAS ==================
-// ======================================================
+// ====================== HISTORIAL Y ESTADISTICAS =============================
 
 void historialEstadisticas() {
     if (totalRegistros == 0) {
@@ -426,7 +443,7 @@ void historialEstadisticas() {
 
     cout << "\n================ ESTADISTICAS =================\n";
     cout << "Total Pendientes  : " << totalPendientes << "\n";
-    cout << "Total Preparando  : " << totalPreparando << "\n";
+    cout << "Total Preparando  : " << totalPreparando << "\n";    
     cout << "Total En camino  : " << totalEnCamino << "\n";
     cout << "Total Entregados  : " << totalEntregado << "\n";
 
